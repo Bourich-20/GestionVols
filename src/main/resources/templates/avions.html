@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th = "http://www.thymeleaf.org" xmlns:layout="http://www.ultaq.net.nz/thymeleaf/layout"
+layout:decorate="template">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="webjars/bootstrap/5.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="webjars/bootstrap-icons/1.11.2/font/bootstrap-icons.css">
+    <script src="webjars/jquery/3.7.1/jquery.min.js"></script>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="p-3">
+        <div class="card">
+            <div class="card-header"> Liste des avions</div>
+            <div class="card-body">
+                <div>
+                    <form>
+                        <label>keyword </label>
+                        <input type="text" name="keyword">
+                        <button type="submit" class="btn btn-info">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </form>
+                </div>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>TypeAvion</th>
+                        <th>X</th>
+                        <th>Y</th>
+                        <th>NbrDePlaces</th>
+                        <th>Consomation</th>
+                        <th>CapaciteCarburan</th>
+                        <th>VitesseNormale</th>
+                        <th> VitesseAtterrissage</th>
+                        <th>VitesseCollage</th>
+                        <th>desination</th>
+                    </tr>
+                    <tr th:each="p:${listeAvions}">
+                        <td th:text="${p.id}"></td>
+                        <td th:text="${p.typeAvion}"></td>
+                        <td th:text="${p.x}"></td>
+                        <td th:text="${p.y}"></td>
+                        <td th:text="${p.NbrDePlaces}"></td>
+                        <td th:text="${p.Consomation}"></td>
+                        <td th:text="${p.CapaciteCarburan}"></td>
+                        <td th:text="${p.VitesseNormale}"></td>
+                        <td th:text="${p.VitesseAtterrissage}"></td>
+                        <td th:text="${p.VitesseCollage}"></td>
+                        <td th:text="${p.desination}"></td>
+                        <td>
+                            <a onclick="javascript:return confirm('Etes vous sure ?')" th:href="@{delete(id=${p.id})}" class="btn btn-danger">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+                        <td>
+                            <a class="btn btn-success" th:href="@{editAvion(id=${p.id})}">Edit</a>
+                        </td>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

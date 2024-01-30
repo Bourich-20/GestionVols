@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th = "http://www.thymeleaf.org" xmlns:layout="http://www.ultaq.net.nz/thymeleaf/layout"
+layout:decorate="template">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="webjars/bootstrap/5.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="webjars/bootstrap-icons/1.11.2/font/bootstrap-icons.css">
+    <script src="webjars/jquery/3.7.1/jquery.min.js"></script>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="row">
+       <div class="col-md-6 offset-3">
+           <div class="card">
+               <div class="card-header"> Nouveu Avion</div>
+               <div class="card-body"><div class="p-3">
+                   <form th:action="@{/saveAvion}" method="post">
+                       <div class="mb-2">
+                           <label class="form-label">Type Avion</label>
+                           <input type="text" name="TypeAvion" class="form-control" th:value="${avion.typeAvion}">
+                       </div>
+                       <div class="mb-2">
+                           <label class="form-label">X</label>
+                           <input type="text" name="X" class="form-control" th:value="${avion.x}">
+                       </div>
+                       <div class="mb-2">
+                           <label class="form-label">Y</label>
+                           <input type="text" name="Y" class="form-control" th:value="${avion.y}">
+                       </div>
+                       <div class="mb-2">
+                           <label class="form-label">Nombre De Places</label>
+                           <input type="text" name="NbrDePlaces" class="form-control" th:value="${avion.NbrDePlaces}">
+                       </div>
+                       <div class="mb-2">
+                           <label class="form-label">Consomation</label>
+                           <input type="text" name="Consomation" class="form-control"th:value="${avion.Consomation}">
+                       </div>
+                       <div class="mb-2">
+                           <label class="form-label">Capacite Carburan</label>
+                           <input type="text" name="CapaciteCarburan" class="form-control" th:value="${avion.CapaciteCarburan}">
+                       </div>
+                       <div class="mb-2">
+                           <label class="form-label">VitesseNormale</label>
+                           <input type="text" name="Vitesse Normale" class="form-control" th:value="${avion.VitesseNormale}">
+                       </div>
+                       <div class="mb-2">
+                           <label class="form-label">Vitesse Atterrissage</label>
+                           <input type="text" name="VitesseAtterrissage" class="form-control" th:value="${avion.VitesseAtterrissage}">
+                       </div>
+                       <div class="mb-2">
+                           <label class="form-label">Vitesse Collage</label>
+                           <input type="text" name="VitesseCollage" class="form-control" th:value="${avion.VitesseCollage}">
+                       </div>
+                       <div class="mb-2">
+                           <label class="form-label">Desination</label>
+                           <input type="text" name="desination" class="form-control" th:value="${avion.desination}">
+                       </div>
+                       <button class="btn btn-success">Enregistrer</button>
+                   </form>
+               </div>
+               </div> </div>
+           </div>
+       </div>
+    </div>
+
+
+
+</body>
+</html>

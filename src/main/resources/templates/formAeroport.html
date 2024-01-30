@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th = "http://www.thymeleaf.org" xmlns:layout="http://www.ultaq.net.nz/thymeleaf/layout"
+      layout:decorate="template">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="webjars/bootstrap/5.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="webjars/bootstrap-icons/1.11.2/font/bootstrap-icons.css">
+    <script src="webjars/jquery/3.7.1/jquery.min.js"></script>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="row">
+        <div class="col-md-6 offset-3">
+            <div class="card">
+                <div class="card-header"> Nouveu Aeroport</div>
+                <div class="card-body"><div class="p-3">
+                    <form th:action="@{/saveAeroport}" method="post">
+                        <div class="mb-2">
+                            <label class="form-label">Nom Aeroport</label>
+                            <input type="text" name="nom" class="form-control" th:value="${aeroport.nom}">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">X</label>
+                            <input type="text" name="X" class="form-control" th:value="${aeroport.x}">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Y</label>
+                            <input type="text" name="Y" class="form-control" th:value="${aeroport.y}">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Nombre De Pistes</label>
+                            <input type="text" name="nbrPistes" class="form-control" th:value="${aeroport.nbrPistes}">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Nombre De Stations</label>
+                            <input type="text" name="nbrStations" class="form-control"th:value="${aeroport.nbrStations}">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">tempsAccesAuxPistes</label>
+                            <input type="text" name="tempsAccesAuxPistes" class="form-control" th:value="${aeroport.tempsAccesAuxPistes}">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">tempsDeDecolageOuAtterrissage</label>
+                            <input type="text" name="tempsDeDecolageOuAtterrissagetempsDeDecolageOuAtterrissage" class="form-control" th:value="${aeroport.tempsDeDecolageOuAtterrissage}">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">delaiAttenteAuSol</label>
+                            <input type="text" name="delaiAttenteAuSol" class="form-control" th:value="${aeroport.delaiAttenteAuSol}">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">dureeDeBoucleAttentEnVol</label>
+                            <input type="text" name="dureeDeBoucleAttentEnVol" class="form-control" th:value="${aeroport.dureeDeBoucleAttentEnVol}">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Distance</label>
+                            <input type="text" name="distance" class="form-control" th:value="${aeroport.distance}">
+                        </div>
+                        <button class="btn btn-success">Enregistrer</button>
+                    </form>
+                </div>
+                </div> </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

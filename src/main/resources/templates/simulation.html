@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            height: 100vh;
+            background-color: #e0f7fa;
+        }
+
+
+        #container {
+            display: flex;
+        }
+
+        #canvas {
+            flex: 1;
+
+            border: 1px solid #424242; /* Gris foncé */
+        }
+
+
+
+
+        button {
+            display: block;
+            margin-top: 10px;
+        }
+        #sidebar {
+            display: none;
+        }
+        #airportInfo {
+            display: none;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: white;
+            padding: 10px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        #toggleSettingsButton {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+        }
+        #startVolsButton{
+            position: fixed;
+            top: 10px;
+            right: 50px;
+        }
+        #buttonADD{
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        #buttonADD button {
+            flex: 1;
+            margin-right: 10px;
+        }
+
+    </style>
+    <title>Flight Simulation</title>
+</head>
+
+<body>
+<div id="container">
+    <button type="button" id="toggleSettingsButton"><img src="/images/00.png" width="20px" height="20"></button>
+    <button type="button" id="startVolsButton" >Start Vols</button>
+
+    <div id="sidebar">
+
+        <div id="buttonADD">
+            <button type="button" id="showAirportFormButton">Add Airport</button>
+            <button type="button" id="showAvionFormButton">Add Avion</button>
+            <button type="button" id="showVolFormButton">Add Vol</button>
+        </div>
+
+
+        <form id="airportForm">
+            <label for="nom">Name:</label>
+            <input type="text" id="nom" name="nom" required><br>
+
+            <label for="nombrePistes">Number of Runways:</label>
+            <input type="number" id="nombrePistes" name="nombrePistes" required><br>
+
+            <label for="nombreStations">Number of Stations:</label>
+            <input type="number" id="nombreStations" name="nombreStations" required><br>
+
+            <label for="tempsAccesAuxPistes">Access Time to Runways (ms):</label>
+            <input type="number" id="tempsAccesAuxPistes" name="tempsAccesAuxPistes" required><br>
+
+            <label for="tempsDeDecollageOuAtterrissage">Takeoff/Landing Time (ms):</label>
+            <input type="number" id="tempsDeDecollageOuAtterrissage" name="tempsDeDecollageOuAtterrissage" required><br>
+
+            <label for="delaiAttenteAuSol">Ground Waiting Time:</label>
+            <input type="number" id="delaiAttenteAuSol" name="delaiAttenteAuSol" step="0.01" required><br>
+
+            <label for="dureeDeBoucleAttenteEnVol">Loop Waiting Time in Flight:</label>
+            <input type="number" id="dureeDeBoucleAttenteEnVol" name="dureeDeBoucleAttenteEnVol" step="0.01" required><br>
+
+            <label for="distance">Distance:</label>
+            <input type="number" id="distance" name="distance" step="0.01" required><br>
+
+        </form>
+        <form id="avionForm" style="display: none;">
+
+
+            <label for="typeAvion">Aircraft Type:</label>
+            <input type="text" id="typeAvion" name="typeAvion" required><br>
+
+            <label for="consommation">Consumption:</label>
+            <input type="number" id="consommation" name="consommation" step="0.01" required><br>
+
+            <label for="capaciteCarburant">Fuel Capacity:</label>
+            <input type="number" id="capaciteCarburant" name="capaciteCarburant" step="0.01" required><br>
+
+            <label for="altitudeActuelle">Current Altitude:</label>
+            <input type="number" id="altitudeActuelle" name="altitudeActuelle" step="0.01" required><br>
+
+            <label for="vitesseNormale">Normal Speed:</label>
+            <input type="number" id="vitesseNormale" name="vitesseNormale" step="0.01" required><br>
+
+            <label for="vitesseAtterrissage">Landing Speed:</label>
+            <input type="number" id="vitesseAtterrissage" name="vitesseAtterrissage" step="0.01" required><br>
+
+
+
+            <button type="button" id="addAvionButton">Add Avion</button>
+        </form>
+        <form id="volForm" style="display: none;">
+            <label for="selectDeparture">Departure Airport:</label>
+            <select id="selectDeparture" name="selectDeparture"></select><br>
+
+            <label for="selectArrival">Arrival Airport:</label>
+            <select id="selectArrival" name="selectArrival"></select><br>
+
+            <label for="selectAvion">Aircraft:</label>
+            <select id="selectAvion" name="selectAvion"></select><br>
+
+            <label for="heureDepart">Departure Time:</label>
+            <input type="text" id="heureDepart" name="heureDepart" required><br>
+
+            <button type="button" id="addVolButton">Add Vol</button>
+        </form>
+
+    </div>
+    <form id="settingsForm" style="display: none;">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br>
+
+        <button type="button" onclick="checkCredentials()">Login</button>
+    </form>
+    <canvas id="canvas"></canvas>
+
+    <div id="airportInfo"></div>
+
+</div>
+
+<script>
+    document.getElementById('toggleSettingsButton').addEventListener('click', function () {
+        var settingsForm = document.getElementById('settingsForm');
+        var sidebar = document.getElementById('sidebar');
+        if(sidebar.style.display === 'block' || settingsForm.style.display === 'block'){
+            settingsForm.style.display = 'none';
+            sidebar.style.display = 'none'
+        }
+        else{
+            if (sidebar.style.display === 'block') {
+                settingsForm.style.display = 'none';
+            } else {
+                settingsForm.style.display = 'block';
+            }
+        }
+
+    });
+
+
+    function checkCredentials() {
+        var username = document.getElementById('username').value;
+        var password = document.getElementById('password').value;
+
+        if (username === 'admin' && password === 'admin') {
+            document.getElementById('sidebar').style.display = 'block';
+            document.getElementById('settingsForm').style.display = 'none';
+        } else {
+            alert('Identifiants incorrects. Veuillez réessayer.');
+        }
+    }
+
+
+    function createCanvas(width, height, set2dTransform = true) {
+        const ratio = window.devicePixelRatio;
+        const canvas = document.getElementById('canvas');
+        const backgroundImage = `url('images/world.svg')`;
+
+        canvas.setAttribute("style", `
+    background-image: ${backgroundImage};
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: ${width}px;
+    height: ${height}px;
+  `);
+
+        canvas.width = width * ratio;
+        canvas.height = height * ratio;
+
+        if (set2dTransform) {
+            const ctx = canvas.getContext('2d');
+            ctx.scale(ratio, ratio);
+        }
+
+        return canvas;
+    }
+
+
+    function dessinerAeroport(ctx, aeroport) {
+        ctx.beginPath();
+        ctx.arc(aeroport.x, aeroport.y, 5, 0, 2 * Math.PI);
+        ctx.fillStyle = 'blue';
+        ctx.fill();
+        ctx.stroke();
+    }
+
+
+    function tracerLignesEntreAeroports(ctx, aeroports) {
+        for (let i = 0; i < aeroports.length - 1; i++) {
+            for (let j = i + 1; j < aeroports.length; j++) {
+                const aeroport1 = aeroports[i];
+                const aeroport2 = aeroports[j];
+
+                ctx.beginPath();
+                ctx.moveTo(aeroport1.x, aeroport1.y);
+                ctx.lineTo(aeroport2.x, aeroport2.y);
+                ctx.strokeStyle = 'blue';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
+        }
+    }
+    const aeroports = [];
+    const avions = [];
+    const vols = [];
+    const canvas = createCanvas(window.innerWidth - 200, window.innerHeight);
+    const ctx = canvas.getContext('2d');
+    function initializeSimulation() {
+
+        fetch('/api/aeroports')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP! Statut : ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (!Array.isArray(data)) {
+                    throw new Error('La réponse ne contient pas un tableau d\'aéroports valide.');
+                }
+                aeroports.push(...data);
+                console.log('Aéroports récupérés depuis la base de données:', aeroports);
+            })
+            .catch(error => {
+                console.error('Erreur lors de la récupération des aéroports:', error);
+            });
+        fetch('/api/avionsAll')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP! Statut : ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (!Array.isArray(data)) {
+                    throw new Error('La réponse ne contient pas un tableau d\'aéroports valide.');
+                }
+                avions.push(...data);
+                console.log('Avions récupérés depuis la base de données:', avions);
+            })
+            .catch(error => {
+                console.error('Erreur lors de la récupération des aéroports:', error);
+            });
+
+        fetch('/volsData')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP! Statut : ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (!Array.isArray(data)) {
+                    throw new Error('La réponse ne contient pas un tableau d\'Vols valide.');
+                }
+                vols.push(...data);
+                console.log('vols récupérés depuis la base de données:', vols);
+            })
+            .catch(error => {
+                console.error('Erreur lors de la récupération des vols:', error);
+            });
+
+
+        function animer() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            aeroports.forEach(aeroport => {
+                dessinerAeroport(ctx, aeroport);
+            });
+
+            tracerLignesEntreAeroports(ctx, aeroports);
+
+            requestAnimationFrame(animer);
+        }
+        const startVolsButton = document.getElementById('startVolsButton');
+        startVolsButton.addEventListener('click', animerAvions);
+
+        animer();
+
+        function startAddingAirport() {
+            document.getElementById('volForm').style.display = 'none';
+            document.getElementById('avionForm').style.display = 'none';
+            document.getElementById('airportForm').style.display = 'block';
+            canvas.addEventListener('click', ajouterAeroport);
+        }
+        function startAddingAvion() {
+            document.getElementById('volForm').style.display = 'none';
+            document.getElementById('airportForm').style.display = 'none';
+            document.getElementById('avionForm').style.display = 'block';
+            document.getElementById('addAvionButton').addEventListener('click', ajouterAvion);
+        }
+        function startAddingVol() {
+            document.getElementById('volForm').style.display = 'block';
+            document.getElementById('avionForm').style.display = 'none';
+            document.getElementById('airportForm').style.display = 'none';
+            document.getElementById('addVolButton').addEventListener('click', ajouterVol);
+            updateAirportAvionsLists();
+        }
+        function ajouterAeroport(event) {
+            const rect = canvas.getBoundingClientRect();
+            const x = (event.clientX - rect.left) / window.devicePixelRatio;
+            const y = (event.clientY - rect.top) / window.devicePixelRatio;
+
+
+            const aeroportInfo = {
+                nom: document.getElementById('nom').value,
+                nbrPistes: parseInt(document.getElementById('nombrePistes').value),
+                nbrStations: parseInt(document.getElementById('nombreStations').value),
+                tempsAccesAuxPistes: parseInt(document.getElementById('tempsAccesAuxPistes').value),
+                tempsDeDecolageOuAtterrissage: parseInt(document.getElementById('tempsDeDecollageOuAtterrissage').value),
+                delaiAttenteAuSol: parseFloat(document.getElementById('delaiAttenteAuSol').value),
+                dureeDeBoucleAttentEnVol: parseFloat(document.getElementById('dureeDeBoucleAttenteEnVol').value),
+                distance: parseFloat(document.getElementById('distance').value),
+                x :x,
+                y:y
+            };
+
+            aeroports.push(aeroportInfo);
+
+            fetch('saveNvAeroport', {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json;charset=UTF-8;"
+                },
+                body: JSON.stringify(aeroportInfo),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                    document.getElementById('airportForm').reset();
+                    canvas.removeEventListener('click', ajouterAeroport);
+                    animer();
+                    updateAirportAvionsLists();
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        }
+
+        function ajouterAvion() {
+            const avionInfo = {
+                typeAvion: document.getElementById('typeAvion').value,
+                consomation: parseFloat(document.getElementById('consommation').value),
+                capaciteCarburan: parseFloat(document.getElementById('capaciteCarburant').value),
+                altitudeActuelle: parseFloat(document.getElementById('altitudeActuelle').value),
+                vitesseNormale: parseFloat(document.getElementById('vitesseNormale').value),
+                vitesseAtterrissage: parseFloat(document.getElementById('vitesseAtterrissage').value),
+            };
+
+            avions.push(avionInfo);
+
+            // Envoi des données directement au backend
+            fetch('/api/saveAviondata', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(avionInfo),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+
+            console.log(avions);
+            document.getElementById('avionForm').reset();
+            animer();
+            updateAirportAvionsLists();
+        }
+
+        const addButton = document.getElementById('showAirportFormButton');
+        addButton.addEventListener('click', startAddingAirport);
+
+        const showAvionFormButton = document.getElementById('showAvionFormButton');
+        showAvionFormButton.addEventListener('click', startAddingAvion);
+        const showVolFormButton = document.getElementById('showVolFormButton');
+        showVolFormButton.addEventListener('click', startAddingVol);
+
+        canvas.addEventListener('click', gererClic);
+
+        function gererClic(event) {
+            const rect = canvas.getBoundingClientRect();
+            const clicX = (event.clientX - rect.left) / window.devicePixelRatio;
+            const clicY = (event.clientY - rect.top) / window.devicePixelRatio;
+
+            aeroports.forEach(aeroport => {
+                const distance = Math.sqrt((clicX - aeroport.x) ** 2 + (clicY - aeroport.y) ** 2);
+
+                if (distance <= 5) {
+                    toggleInfoAeroport(aeroport);
+                }
+            });
+        }
+
+        function toggleInfoAeroport(aeroport) {
+            const airportInfoDiv = document.getElementById('airportInfo');
+
+            if (airportInfoDiv.dataset.lastClicked === aeroport.nom) {
+                airportInfoDiv.style.display = 'none';
+                airportInfoDiv.dataset.lastClicked = null;
+            } else {
+                afficherInfoAeroport(aeroport);
+                airportInfoDiv.dataset.lastClicked = aeroport.nom;
+            }
+        }
+
+
+        let selectingDeparturePoint = false;
+        let selectingArrivalPoint = false;
+        document.getElementById('selectDeparture').addEventListener('change', function() {
+            selectingDeparturePoint = this.checked;
+        });
+
+        document.getElementById('selectArrival').addEventListener('change', function() {
+            selectingArrivalPoint = this.checked;
+        });
+        canvas.addEventListener('click', function(event) {
+            const rect = canvas.getBoundingClientRect();
+            const x = (event.clientX - rect.left) / window.devicePixelRatio;
+            const y = (event.clientY - rect.top) / window.devicePixelRatio;
+
+            if (selectingDeparturePoint) {
+                document.getElementById('pointDepart').value = `(${x}, ${y})`;
+                document.getElementById('xDepart').value = x;
+                document.getElementById('yDepart').value = y;
+                selectingDeparturePoint = false;
+            } else if (selectingArrivalPoint) {
+                document.getElementById('pointArrivee').value = `(${x}, ${y})`;
+                document.getElementById('xArrivee').value = x;
+                document.getElementById('yArrivee').value = y;
+                selectingArrivalPoint = false;
+            } else {
+
+            }
+        });
+        function updateAirportAvionsLists() {
+            const departureSelect = document.getElementById('selectDeparture');
+            const arrivalSelect = document.getElementById('selectArrival');
+            const avionSelect = document.getElementById('selectAvion');
+            avionSelect.innerHTML = '';
+
+            departureSelect.innerHTML = '';
+            arrivalSelect.innerHTML = '';
+
+            const emptyOptionAirport = document.createElement('option');
+            emptyOptionAirport.value = '';
+            emptyOptionAirport.text = 'Select Airport';
+            departureSelect.appendChild(emptyOptionAirport.cloneNode(true));
+            arrivalSelect.appendChild(emptyOptionAirport);
+
+            aeroports.forEach(aeroport => {
+                const option = document.createElement('option');
+                option.value = aeroport.nom;
+                option.text = aeroport.nom;
+
+                // Ajoutez l'ID de l'aéroport à l'option
+                option.setAttribute('data-id', aeroport.id);
+                option.setAttribute('data-x', aeroport.x);
+                option.setAttribute('data-y', aeroport.y);
+
+                departureSelect.appendChild(option.cloneNode(true));
+                arrivalSelect.appendChild(option);
+            });
+
+            const emptyOptionAvion = document.createElement('option');
+            emptyOptionAvion.value = '';
+            emptyOptionAvion.text = 'Select Aircraft';
+            avionSelect.appendChild(emptyOptionAvion);
+
+            avions.forEach(avion => {
+                const option = document.createElement('option');
+                option.value = avion.id;
+                option.text = avion.id;
+
+                option.setAttribute('data-id', avion.id);
+
+                avionSelect.appendChild(option);
+            });
+
+        }
+
+        function ajouterVol() {
+            const selectedDepartureAirport = document.getElementById('selectDeparture');
+            const selectedArrivalAirport = document.getElementById('selectArrival');
+            const selectedAvion = document.getElementById('selectAvion');
+
+            const departureAirportOption = selectedDepartureAirport.options[selectedDepartureAirport.selectedIndex];
+            const arrivalAirportOption = selectedArrivalAirport.options[selectedArrivalAirport.selectedIndex];
+
+            const departureAirport = {
+                id: departureAirportOption.getAttribute('data-id'),
+                nom: selectedDepartureAirport.value,
+                x: parseFloat(departureAirportOption.getAttribute('data-x')),
+                y: parseFloat(departureAirportOption.getAttribute('data-y'))
+            };
+
+            const arrivalAirport = {
+                id: arrivalAirportOption.getAttribute('data-id'),
+                nom: selectedArrivalAirport.value,
+                x: parseFloat(arrivalAirportOption.getAttribute('data-x')),
+                y: parseFloat(arrivalAirportOption.getAttribute('data-y'))
+            };
+
+            const avionId = selectedAvion.options[selectedAvion.selectedIndex].getAttribute('data-id');
+
+            const volInfo = {
+                aeroportDeDepart: departureAirport,
+                aeroportArrives: arrivalAirport,
+                avion: { id: avionId }  // Assurez-vous que avion est un objet avec une propriété id
+            };
+
+            console.log("Données envoyées au backend :", JSON.stringify(volInfo));
+
+            vols.push(volInfo);
+            updateAirportAvionsLists();
+// Envoi des données directement au backend
+            fetch('/saveVoldata', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(volInfo),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                })
+                .catch((error) => {
+                });
+
+
+            console.log(vols);
+
+
+            document.getElementById('volForm').reset();
+            animer();
+        }
+        class Avion {
+            constructor(ctx, chemin, vitesse, delaiDeDepart) {
+                this.ctx = ctx;
+                this.chemin = chemin;
+                this.vitesse = vitesse;
+                this.positionIndex = 0;
+                this.avionPosition = { x: chemin[0].x, y: chemin[0].y };
+                this.img = new Image();
+                this.img.src = '/images/plain.svg';
+                this.delaiDeDepart = delaiDeDepart || 0; // Valeur par défaut : pas de délai
+                this.tempsDeDepart = Date.now() + this.delaiDeDepart;
+            }
+
+            calculerAngle() {
+                const prochainPoint = this.chemin[this.positionIndex + 1];
+                return Math.atan2(prochainPoint.y - this.avionPosition.y, prochainPoint.x - this.avionPosition.x);
+            }
+
+            dessinerAvion() {
+                this.ctx.save();
+                this.ctx.translate(this.avionPosition.x, this.avionPosition.y);
+
+                const angle = this.calculerAngle();
+                this.ctx.rotate(angle + Math.PI / 2);
+
+                if (this.chemin[this.positionIndex + 1].x < this.chemin[this.positionIndex].x) {
+                    this.ctx.scale(-1, 1);
+                }
+
+                this.ctx.clearRect(-25, -25, 50, 50);
+                this.ctx.drawImage(this.img, -25, -25, 50, 50);
+                this.ctx.restore();
+            }
+
+            deplacer() {
+                if (Date.now() < this.tempsDeDepart) {
+                    // Ne pas déplacer l'avion tant que le délai de départ n'est pas écoulé
+                    return false;
+                }
+
+                this.dessinerAvion();
+
+                const prochainPoint = this.chemin[this.positionIndex + 1];
+
+                // Calculer la distance entre l'avion et le prochain point
+                const distanceX = prochainPoint.x - this.avionPosition.x;
+                const distanceY = prochainPoint.y - this.avionPosition.y;
+                const distanceTotale = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+
+                // Calculer le déplacement nécessaire sur chaque axe
+                const deplacementX = (distanceX / distanceTotale) * this.vitesse;
+                const deplacementY = (distanceY / distanceTotale) * this.vitesse;
+
+                // Mettre à jour la position de l'avion
+                this.avionPosition.x += deplacementX;
+                this.avionPosition.y += deplacementY;
+
+                // Vérifier si l'avion a atteint le prochain point
+                if (
+                    (distanceX > 0 && this.avionPosition.x >= prochainPoint.x) ||
+                    (distanceX < 0 && this.avionPosition.x <= prochainPoint.x) ||
+                    (distanceY > 0 && this.avionPosition.y >= prochainPoint.y) ||
+                    (distanceY < 0 && this.avionPosition.y <= prochainPoint.y)
+                ) {
+                    this.avionPosition.x = prochainPoint.x;
+                    this.avionPosition.y = prochainPoint.y;
+                    this.positionIndex++;
+
+                    if (this.positionIndex === this.chemin.length - 1) {
+                        return true; // L'avion a atteint sa destination
+                    }
+                }
+
+                return false;
+            }
+        }
+
+        async function animerAvions() {
+            aeroports.forEach(aeroport => {
+                dessinerAeroport(ctx, aeroport);
+            });
+
+            tracerLignesEntreAeroports(ctx, aeroports);
+
+            // Créer tous les avions de chaque vol avec un délai de départ de 2000 ms (2 secondes) entre chaque vol
+            const tousLesAvions = await Promise.all(vols.map(async (vol, index) => {
+                const cheminPlusCourt = await trouverCheminDijkstra(vol.aeroportDeDepart.id, vol.aeroportArrives.id);
+
+                if (!Array.isArray(cheminPlusCourt)) {
+                    console.error(`Le chemin retourné n'est pas un tableau pour le vol ${vol.id}:`, cheminPlusCourt);
+                    return [];
+                }
+
+                const cheminPoints = cheminPlusCourt.map(pointId => {
+                    const aeroport = aeroports.find(a => a.id === pointId);
+                    return { x: aeroport.x, y: aeroport.y };
+                });
+
+                // Ajouter un délai de départ de 2000 ms (2 secondes) entre chaque vol
+                const delaiDeDepart = index * 0; // en millisecondes
+
+                return new Avion(ctx, cheminPoints, 0.5, delaiDeDepart);
+            }));
+
+            // Fonction d'animation pour tous les avions
+            async function animation() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                aeroports.forEach(aeroport => {
+                    dessinerAeroport(ctx, aeroport);
+                });
+
+                tracerLignesEntreAeroports(ctx, aeroports);
+
+                let tousLesAvionsArrives = true;
+
+                // Animation pour chaque avion de chaque vol
+                for (const avion of tousLesAvions) {
+                    if (avion.positionIndex < avion.chemin.length - 1) {  // Ajout de cette vérification
+                        if (!avion.deplacer()) {
+                            tousLesAvionsArrives = false;
+                        }
+                    }
+                }
+
+                if (!tousLesAvionsArrives) {
+                    await new Promise(resolve => requestAnimationFrame(resolve));
+                    await animation();
+                }
+            }
+
+            // Démarrez l'animation pour tous les avions
+            await animation();
+        }
+
+// Fonction pour trouver le chemin le plus court avec Dijkstra
+        function trouverCheminDijkstra(depart, arrivee) {
+            const url = `/chemin/${depart}/${arrivee}`;
+
+            console.log("oui j'ai entre");
+
+            return fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Erreur HTTP! Statut : ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(cheminPlusCourt => {
+                    // Assurez-vous que cheminPlusCourt est un tableau
+                    if (!Array.isArray(cheminPlusCourt)) {
+                        console.error("Le chemin retourné n'est pas un tableau :", cheminPlusCourt);
+                        return [];  // Retournez un tableau vide ou ajustez en fonction de votre logique
+                    }
+
+                    // Ajouter 1 à chaque élément du tableau
+                    const cheminAvecAjout = cheminPlusCourt.map(element => element + 1);
+                    console.log("Chemin le plus court avec ajout de 1 :", cheminAvecAjout);
+                    return cheminAvecAjout;
+                })
+                .catch(error => {
+                    console.error('Erreur lors de la récupération du chemin le plus court :', error);
+                });
+        }
+
+        function afficherInfoAeroport(aeroport) {
+            const airportInfoDiv = document.getElementById('airportInfo');
+            airportInfoDiv.innerHTML = `
+          <h2>Informations de l'aéroport</h2>
+          <p>Nom: ${aeroport.nom}</p>
+          <p>Nombre de pistes: ${aeroport.nombrePistes}</p>
+          <p>Nombre de stations: ${aeroport.nombreStations}</p>
+          <p>Temps d'accès aux pistes: ${aeroport.tempsAccesAuxPistes} ms</p>
+          <p>Temps de décollage/atterrissage: ${aeroport.tempsDeDecollageOuAtterrissage} ms</p>
+          <p>Délai d'attente au sol: ${aeroport.delaiAttenteAuSol}</p>
+          <p>Durée de boucle d'attente en vol: ${aeroport.dureeDeBoucleAttenteEnVol}</p>
+          <p>Distance: ${aeroport.distance}</p>
+          <p>Localisation :${aeroport.x} ,${aeroport.y}</p>
+        `;
+            airportInfoDiv.style.display = 'block';
+        }
+    }
+
+    window.onload = function() {
+        initializeSimulation();
+    };
+</script>
+</body>
+
+</html>
