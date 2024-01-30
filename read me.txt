@@ -1,0 +1,26 @@
+Read me  :	
+1)Intégration du projet dans Eclipse ou IntelliJ :
+Ouvrez votre IDE (Eclipse ou IntelliJ).
+Importez le projet en sélectionnant l'option appropriée (par exemple, "Import Project" dans IntelliJ ou "Import > Existing Maven Project" dans Eclipse).
+Choisissez le répertoire du projet.
+2)Exécution du projet :
+Assurez-vous que votre serveur d'application (comme Apache Tomcat) est configuré dans votre IDE.
+Démarrez le serveur d'application.
+Déployez votre application sur le serveur.
+Exécutez le projet.
+3)Accéder à l'application dans le navigateur :
+Ouvrez votre navigateur web.
+Accédez à l'URL http://localhost:8082/simulation ou cliquez sur le lien approprié.
+4)Cliquer sur le bouton Réglages :
+Sur la page d'accueil, cliquez sur le bouton "Réglages" pour accéder à la section d'administration.
+Ajouter des aéroports dynamiquement :
+Remplissez les champs requis pour ajouter un aéroport.
+Cliquez sur "Ajouter Aéroport" pour définir un point représentant l'aéroport. Cliquez sur la position souhaitée sur la carte.
+5)Ajouter des avions :
+Accédez à la section appropriée pour ajouter des avions.
+Remplissez les détails requis pour chaque avion.
+6)Ajouter des vols 
+Accédez à la section des vols.
+Ajoutez les détails requis pour chaque vol.
+7)Démarrer les vols :
+Sur la page des vols, cliquez sur "Start Vols" pour lancer les vols.
